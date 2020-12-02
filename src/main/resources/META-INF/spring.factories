@@ -1,0 +1,5 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.decentage.multitenancy.config.DefaultMultiTenantHandlerInitializer,\
+com.decentage.multitenancy.config.MultiTenantConfig,\
+com.decentage.multitenancy.config.HibernateInterceptorRegistration,\
+com.decentage.multitenancy.config.AppContextReadyListener
