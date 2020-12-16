@@ -26,5 +26,6 @@ public class TenantInterceptorsProperties {
         private Class<T> supportType;
         private String tenantFieldName;
         private List<String> skipSigns;
+        private boolean autoInsert;
     }
 }

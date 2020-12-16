@@ -27,11 +27,13 @@ public class AppConfig {
                         .supportType(TenantSupport.class)
                         .tenantFieldName("tenant")
                         .skipSigns(Collections.singletonList(Skip.SKIP_TENANT))
+                        .autoInsert(true)
                         .build())
                 .add(TenantInterceptorsProperties.TenantProperties.<ClientSupport>builder()
                         .supportType(ClientSupport.class)
                         .tenantFieldName("client")
                         .skipSigns(Arrays.asList(Skip.SKIP_TENANT, Skip.SKIP_CLIENT))
+                        .autoInsert(true)
                         .build());
     }
 

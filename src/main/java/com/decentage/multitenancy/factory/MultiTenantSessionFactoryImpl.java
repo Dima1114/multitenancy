@@ -4,7 +4,6 @@ import lombok.val;
 import org.hibernate.Session;
 import org.hibernate.boot.spi.MetadataImplementor;
 import org.hibernate.boot.spi.SessionFactoryOptions;
-import org.hibernate.engine.query.spi.QueryPlanCache;
 import org.hibernate.engine.spi.FilterDefinition;
 import org.hibernate.internal.SessionFactoryImpl;
 import org.springframework.util.ReflectionUtils;
@@ -15,9 +14,9 @@ public class MultiTenantSessionFactoryImpl extends SessionFactoryImpl {
     private boolean isInitialized = false;
 
     public MultiTenantSessionFactoryImpl(MetadataImplementor metadata,
-                                         SessionFactoryOptions options,
-                                         QueryPlanCache.QueryPlanCreator queryPlanCacheFunction) {
-        super(metadata, options, queryPlanCacheFunction);
+                                         SessionFactoryOptions options
+    ) {
+        super(metadata, options);
     }
 
     public void setInitialized(boolean initialized) {

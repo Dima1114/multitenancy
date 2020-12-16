@@ -4,13 +4,11 @@ import com.decentage.multitenancy.exception.MultiTenantSupportException;
 import com.decentage.multitenancy.model.MultiTenantSupport;
 import com.decentage.multitenancy.properties.TenantInterceptorsProperties;
 import com.decentage.multitenancy.provider.MultiTenantContextHolder;
-import lombok.SneakyThrows;
+import com.decentage.multitenancy.utils.TenantExtractorUtil;
 import lombok.val;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.collection.internal.AbstractPersistentCollection;
 import org.hibernate.proxy.HibernateProxy;
-import org.springframework.beans.BeanUtils;
 import org.springframework.util.ReflectionUtils;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -18,7 +16,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.IntStream;
 
 public class TenantInterceptorHandler<T extends MultiTenantSupport> {
@@ -32,7 +29,7 @@ public class TenantInterceptorHandler<T extends MultiTenantSupport> {
         this.supportType = properties.getSupportType();
         this.tenantFieldName = properties.getTenantFieldName();
         this.skipSigns = properties.getSkipSigns() != null ? properties.getSkipSigns() : Collections.emptyList();
-        this.getter = findGetter(supportType);
+        this.getter = TenantExtractorUtil.findGetter(this.supportType, this.tenantFieldName);
     }
 
     public void checkPermissions(Object entity) {
@@ -41,7 +38,7 @@ public class TenantInterceptorHandler<T extends MultiTenantSupport> {
 
     private void checkRelatedPermissions(Object entity, Class<?> relatedClass) {
         if (supportType.isAssignableFrom(entity.getClass())) {
-            Object entityTenant = getTenant(entity);
+            Object entityTenant = TenantExtractorUtil.getTenant(entity, supportType, getter);
             Object tenant = MultiTenantContextHolder.getContext(supportType);
             verifyTenant(tenant, entityTenant);
             checkPermissionsForRelatedObjects(entity, relatedClass);
@@ -72,14 +69,14 @@ public class TenantInterceptorHandler<T extends MultiTenantSupport> {
     @SuppressWarnings("unchecked")
     public void checkCollectionPermissions(AbstractPersistentCollection collection, Object owner) {
         if (supportType.isAssignableFrom(owner.getClass())) {
-            Object ownerTenant = getTenant(owner);
+            Object ownerTenant = TenantExtractorUtil.getTenant(owner, supportType, getter);
             ((Collection) collection).forEach(it -> checkElementPermissions(ownerTenant, it));
         }
     }
 
     private void checkElementPermissions(Object tenant, Object element) {
         if (supportType.isAssignableFrom(element.getClass())) {
-            Object elementTenant = getTenant(element);
+            val elementTenant = TenantExtractorUtil.getTenant(element, supportType, getter);
             if (!Objects.equals(tenant, elementTenant)) {
                 throw new MultiTenantSupportException(
                         String.format("You can`t perform cascade operations with multiple tenants: %s, %s", tenant, elementTenant));
@@ -99,6 +96,11 @@ public class TenantInterceptorHandler<T extends MultiTenantSupport> {
                     String.format("You can`t have entity of type '%s' without providing '%s' field value",
                             supportType.getName(), tenantFieldName));
         }
+        if (skipSigns.stream().anyMatch(sign -> Objects.equals(sign, entityTenant))) {
+            throw new MultiTenantSupportException(
+                    String.format("You can`t have entity of type '%s' providing skip Sign as '%s' field value",
+                            supportType.getName(), tenantFieldName));
+        }
         if (!shouldSkip(userTenant) && !Objects.equals(entityTenant, userTenant)) {
             throw new MultiTenantSupportException(
                     String.format("You don`t have permission to perform Multi Tenant action." +
@@ -112,12 +114,6 @@ public class TenantInterceptorHandler<T extends MultiTenantSupport> {
                     String.format("You can`t change saved tenant during update." +
                             " Previous tenant is '%s', Current tenant is '%s'.", previousTenant, currentTenant));
         }
-    }
-
-    @SneakyThrows
-    private Object getTenant(Object entity) {
-        T tenantSupportEntity = supportType.cast(entity);
-        return getter.invoke(tenantSupportEntity);
     }
 
     private Object getTenantFromFieldsArray(Object[] state, String[] propertyNames) {
@@ -147,14 +143,5 @@ public class TenantInterceptorHandler<T extends MultiTenantSupport> {
                 .filter(field -> !(field instanceof HibernateProxy))
                 .filter(field -> supportType.isAssignableFrom(field.getClass()))
                 .forEach(field -> this.checkRelatedPermissions(field, entity.getClass()));
-    }
-
-    private Method findGetter(Class<T> supportType) {
-        val getterName = "get" + StringUtils.capitalize(tenantFieldName);
-        return Optional.ofNullable(BeanUtils.findDeclaredMethod(supportType, getterName))
-                .orElseThrow(() -> new MultiTenantSupportException(
-                        String.format("Provided type '%s' does not contain Getter method with name '%s'" +
-                                        "for provided field name '%s'",
-                                supportType.getName(), getterName, tenantFieldName)));
     }
 }

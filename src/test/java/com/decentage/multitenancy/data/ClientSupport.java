@@ -4,7 +4,7 @@ import com.decentage.multitenancy.model.MultiTenantSupport;
 
 public interface ClientSupport extends MultiTenantSupport {
 
-    void setClient(Object client);
+    void setClient(String client);
 
-    Object getClient();
+    String getClient();
 }

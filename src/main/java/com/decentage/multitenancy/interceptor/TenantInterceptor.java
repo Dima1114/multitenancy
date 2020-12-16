@@ -1,6 +1,7 @@
 package com.decentage.multitenancy.interceptor;
 
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.Transaction;
 import org.hibernate.collection.internal.AbstractPersistentCollection;
@@ -8,16 +9,22 @@ import org.hibernate.type.Type;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class TenantInterceptor extends EmptyInterceptor {
 
     private final List<TenantInterceptorHandler<?>> tenantHandlers;
+    private final List<TenantInsertHandler<?>> insertHandlers;
 
     @Override
     public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
+        val modified = insertHandlers.stream()
+                .map(handler -> handler.setTenant(entity, state, propertyNames))
+                .collect(Collectors.toList())
+                .contains(true);
         tenantHandlers.forEach(handler -> handler.checkPermissions(entity));
-        return false;
+        return modified;
     }
 
     @Override

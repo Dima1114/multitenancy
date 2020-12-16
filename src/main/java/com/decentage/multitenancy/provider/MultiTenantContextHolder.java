@@ -17,11 +17,11 @@ public class MultiTenantContextHolder {
         strategy.clearContext(type);
     }
 
-    public Object getContext(Class<? extends MultiTenantSupport> type) {
-        return strategy.getContext(type);
+    public String getContext(Class<? extends MultiTenantSupport> type) {
+        return (String) strategy.getContext(type);
     }
 
-    public void setContext(Object context, Class<? extends MultiTenantSupport> type) {
+    public void setContext(String context, Class<? extends MultiTenantSupport> type) {
         strategy.setContext(context, type);
     }
 }

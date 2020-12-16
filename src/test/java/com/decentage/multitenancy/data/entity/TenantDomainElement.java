@@ -3,11 +3,9 @@ package com.decentage.multitenancy.data.entity;
 import com.decentage.multitenancy.data.TenantSupport;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -33,12 +31,12 @@ public class TenantDomainElement implements TenantSupport {
     private String tenant;
 
     @Override
-    public void setTenant(Object tenant) {
-        this.tenant = (String) tenant;
+    public void setTenant(String tenant) {
+        this.tenant = tenant;
     }
 
     @Override
-    public Object getTenant() {
+    public String getTenant() {
         return tenant;
     }
 }

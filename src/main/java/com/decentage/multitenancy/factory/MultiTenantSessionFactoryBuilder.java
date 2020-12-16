@@ -8,7 +8,6 @@ import org.hibernate.boot.spi.MetadataImplementor;
 import org.hibernate.boot.spi.SessionFactoryBuilderImplementor;
 import org.hibernate.bytecode.internal.SessionFactoryObserverForBytecodeEnhancer;
 import org.hibernate.bytecode.spi.BytecodeProvider;
-import org.hibernate.engine.query.spi.HQLQueryPlan;
 import org.springframework.util.ReflectionUtils;
 import java.lang.reflect.Field;
 
@@ -28,7 +27,7 @@ public class MultiTenantSessionFactoryBuilder extends SessionFactoryBuilderImpl 
         final StandardServiceRegistry serviceRegistry = metadata.getMetadataBuildingOptions().getServiceRegistry();
         BytecodeProvider bytecodeProvider = serviceRegistry.getService(BytecodeProvider.class);
         addSessionFactoryObservers(new SessionFactoryObserverForBytecodeEnhancer(bytecodeProvider));
-        return new MultiTenantSessionFactoryImpl(metadata, buildSessionFactoryOptions(), HQLQueryPlan::new);
+        return new MultiTenantSessionFactoryImpl(metadata, buildSessionFactoryOptions());
     }
 
     private static SessionFactoryOptionsBuilder optionsBuilder(SessionFactoryBuilderImplementor sessionFactoryBuilderImplementor) {

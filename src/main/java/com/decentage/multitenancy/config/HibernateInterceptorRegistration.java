@@ -1,7 +1,7 @@
 package com.decentage.multitenancy.config;
 
-import com.decentage.multitenancy.interceptor.TenantInterceptor;
 import com.decentage.multitenancy.factory.MetadataExtractorIntegrator;
+import com.decentage.multitenancy.interceptor.TenantInterceptor;
 import com.decentage.multitenancy.properties.TenantInterceptorsProperties;
 import com.decentage.multitenancy.translator.QueryTranslatorFactoryImpl;
 import lombok.RequiredArgsConstructor;
@@ -27,10 +27,8 @@ public class HibernateInterceptorRegistration implements HibernatePropertiesCust
     public void customize(Map<String, Object> hibernateProperties) {
         hibernateProperties.put("hibernate.session_factory.interceptor", tenantInterceptor);
         hibernateProperties.put("hibernate.query.factory_class", translatorFactory);
-//        hibernateProperties.put("hibernate.current_session_context_class", "thread"); //not safe
         hibernateProperties.put("hibernate.integrator_provider",
                 (IntegratorProvider) () -> Collections.singletonList(
                         new MetadataExtractorIntegrator(interceptorProperties)));
-//        );
     }
 }

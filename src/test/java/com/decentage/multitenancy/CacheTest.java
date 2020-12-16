@@ -3,7 +3,6 @@ package com.decentage.multitenancy;
 import com.decentage.multitenancy.data.ClientSupport;
 import com.decentage.multitenancy.data.Skip;
 import com.decentage.multitenancy.data.TenantSupport;
-import com.decentage.multitenancy.data.config.AppConfig;
 import com.decentage.multitenancy.data.entity.TenantDomain;
 import com.decentage.multitenancy.provider.MultiTenantContextHolder;
 import lombok.val;
@@ -17,7 +16,6 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import java.util.ArrayList;
 import java.util.Arrays;
 

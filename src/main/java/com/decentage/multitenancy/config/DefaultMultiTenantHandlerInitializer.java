@@ -20,6 +20,7 @@ public class DefaultMultiTenantHandlerInitializer {
                 .add(TenantInterceptorsProperties.TenantProperties.<DefaultTenantSupport>builder()
                         .supportType(DefaultTenantSupport.class)
                         .tenantFieldName("tenant")
+                        .autoInsert(false)
                         .build()
                 );
     }

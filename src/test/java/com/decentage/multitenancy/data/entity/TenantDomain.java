@@ -3,19 +3,11 @@ package com.decentage.multitenancy.data.entity;
 import com.decentage.multitenancy.data.TenantSupport;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.FilterJoinTable;
-import org.hibernate.annotations.Filters;
-import org.hibernate.annotations.ParamDef;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -65,12 +57,12 @@ public class TenantDomain implements TenantSupport {
     private Set<TenantClientDomain> tenantClients;
 
     @Override
-    public void setTenant(Object tenant) {
+    public void setTenant(String tenant) {
         this.tenant = (String) tenant;
     }
 
     @Override
-    public Object getTenant() {
+    public String getTenant() {
         return tenant;
     }
 }

@@ -25,12 +25,12 @@ public class ClientDomain implements ClientSupport {
     private String client;
 
     @Override
-    public void setClient(Object client) {
-        this.client = (String) client;
+    public void setClient(String client) {
+        this.client = client;
     }
 
     @Override
-    public Object getClient() {
+    public String getClient() {
         return client;
     }
 }

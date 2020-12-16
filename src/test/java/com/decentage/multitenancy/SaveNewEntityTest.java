@@ -49,6 +49,24 @@ class SaveNewEntityTest extends BaseMultiTenantTest {
     }
 
     @Test
+    void shouldFailToSaveEntityWithTenantFieldAsSkipSign() {
+
+        //given
+        val tenant = getTenant(0, null);
+        MultiTenantContextHolder.setContext(Skip.SKIP_TENANT, TenantSupport.class);
+        tenant.setTenant(MultiTenantContextHolder.getContext(TenantSupport.class));
+
+        //when
+        val result = assertThrows(MultiTenantSupportException.class, () -> tenantDomainRepository.save(tenant));
+
+        //then
+        assertThat(result)
+                .hasMessageContaining(String.format(
+                        "You can`t have entity of type '%s' providing skip Sign as '%s' field value",
+                        TenantSupport.class.getName(), "tenant"));
+    }
+
+    @Test
     void shouldSaveEntityWithTenantAndClientField() {
 
         //given
@@ -94,7 +112,7 @@ class SaveNewEntityTest extends BaseMultiTenantTest {
         assertThat(result)
                 .hasMessageContaining(
                         String.format("You can`t have entity of type '%s' without providing '%s' field value",
-                        TenantSupport.class.getName(), "tenant"));
+                                TenantSupport.class.getName(), "tenant"));
     }
 
     @Test

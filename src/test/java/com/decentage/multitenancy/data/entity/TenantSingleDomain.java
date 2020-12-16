@@ -32,12 +32,12 @@ public class TenantSingleDomain implements TenantSupport {
     private TenantDomain tenantDomain;
 
     @Override
-    public void setTenant(Object tenant) {
-        this.tenant = (String) tenant;
+    public void setTenant(String tenant) {
+        this.tenant = tenant;
     }
 
     @Override
-    public Object getTenant() {
+    public String getTenant() {
         return tenant;
     }
 }

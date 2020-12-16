@@ -1,5 +1,6 @@
 package com.decentage.multitenancy.config;
 
+import com.decentage.multitenancy.interceptor.TenantInsertHandler;
 import com.decentage.multitenancy.interceptor.TenantInterceptor;
 import com.decentage.multitenancy.interceptor.TenantInterceptorHandler;
 import com.decentage.multitenancy.properties.TenantInterceptorsProperties;
@@ -30,7 +31,15 @@ public class MultiTenantConfig {
     }
 
     @Bean
+    public List<TenantInsertHandler<?>> insertHandlers() {
+        return interceptorProperties.getTenantProperties()
+                .stream()
+                .map(props -> new TenantInsertHandler<>(props))
+                .collect(Collectors.toList());
+    }
+
+    @Bean
     public TenantInterceptor multiTenantInterceptor() {
-        return new TenantInterceptor(interceptorHandlers());
+        return new TenantInterceptor(interceptorHandlers(), insertHandlers());
     }
 }
